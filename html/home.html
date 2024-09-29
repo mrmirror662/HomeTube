@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeTube - Video Player</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #errorMessage {
+            /* Centering the error message */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Ensuring it's on top of the video player */
+            z-index: 10;
+            color: white;
+            /* Changing text color to white */
+            font-size: 2.5rem;
+            /* Adjusting font size */
+        }
+
+        video {
+            max-width: 100%;
+            /* Ensuring video is responsive */
+            height: auto;
+        }
+
+        .max-w-md {
+            width: 100%;
+            max-width: 400px;
+            /* Adjust as needed */
+            margin: 0 auto;
+            background-image: linear-gradient(to left, #a5acb7, #7ac7d6);
+            /* Customize the colors */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white">
+    <div class="bg-gray-800 p-4 mb-8">
+        <h1 class="text-3xl text-white font-bold">HomeTube <span class="text-sm">- Your Personal Media Server</span>
+        </h1>
+    </div>
+    <div class="container mx-auto py-8">
+        <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-md shadow-md">
+            <div class=" relative flex">
+                <input type="text" id="videoNameInput" placeholder="Enter video name"
+                    class="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:bg-gray-600">
+                <button onclick="loadVideo()"
+                    class="ml-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-5.2-5.2m-.8-.8c2.8-2.8 2.8-7.2 0-10s-7.2-2.8-10-0c-2.8 2.8-2.8 7.2 0 10s7.2 2.8 10 0c1.1-1.1 1.9-2.4 2.4-3.9" />
+                    </svg>
+                </button>
+                <br>
+            </div>
+        </div>
+        <div class="mt-8 relative">
+            <!-- Alternative video player implementation -->
+            <video id="videoPlayer" controls width="320" height="240"
+                class="w-full rounded-md shadow-md transition-opacity duration-500"  playsinline autoplay loop >
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p id="errorMessage"
+                class="text-red-500 mt-2 hidden absolute top-0 left-0 bg-gray-800 px-4 py-2 rounded-md">No video
+                found
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function loadVideo() {
+            const videoName = document.getElementById('videoNameInput').value;
+            const videoPlayer = document.getElementById('videoPlayer');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Construct the URL with the video name as a query parameter
+            const url = `/video?video_name=${encodeURIComponent(videoName)}.mp4`;
+
+            try {
+                // Fetch the video using the constructed URL
+                const response = await fetch(url);
+                if (response.ok) {
+                    // If the response is successful, set the video source
+                    videoPlayer.src = url;
+                    // Ensure error message is hidden when video is found
+                    errorMessage.classList.add('hidden');
+                    // Reset opacity
+                    videoPlayer.style.opacity = '1';
+                } else {
+                    // If video not found, show error message
+                    errorMessage.classList.remove('hidden');
+                    console.error('Failed to load video:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error loading video:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
